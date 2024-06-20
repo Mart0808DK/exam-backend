@@ -148,4 +148,8 @@ public class ParticipantService {
         return participantRepository.findByName(name)
                 .orElseThrow(() -> new NotFoundException("Participant not found"));
     }
+
+    public Optional<Participant> findParticipantsById(Long id) {
+        return participantRepository.findById(id);
+    }
 }

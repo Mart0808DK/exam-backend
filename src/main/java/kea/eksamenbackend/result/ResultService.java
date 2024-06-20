@@ -1,5 +1,6 @@
 package kea.eksamenbackend.result;
 
+import kea.eksamenbackend.club.ClubService;
 import kea.eksamenbackend.discipline.Discipline;
 import kea.eksamenbackend.discipline.DisciplineDTO;
 import kea.eksamenbackend.discipline.DisciplineService;
@@ -20,12 +21,14 @@ public class ResultService {
         private final ResultRepository resultRepository;
         private final DisciplineService disciplineService;
         private final ParticipantService participantService;
+        private final ClubService clubService;
 
-        public ResultService(ResultRepository entity1Repository, DisciplineService disciplineService, ParticipantService participantService) {
+        public ResultService(ResultRepository entity1Repository, DisciplineService disciplineService, ParticipantService participantService, ClubService clubService) {
             this.resultRepository = entity1Repository;
             this.disciplineService = disciplineService;
             this.participantService = participantService;
-    }
+            this.clubService = clubService;
+        }
 
     public List<ResultDTO> findAllResults() {
         return resultRepository.findAll().stream().map(this::toDTO).toList();
@@ -135,8 +138,14 @@ public class ResultService {
         // Konverter Discipline til DisciplineDTO
         DisciplineDTO disciplineDTO = disciplineService.toDTO(result.getDiscipline());
 
-        // Konverter Participant til ParticipantDTO
-        ParticipantDTO participantDTO = participantService.toDTO(result.getParticipant());
+        // Konverter Participant til ResultParticipantDTO
+        ResultParticipantDTO participantDTO = new ResultParticipantDTO(
+                result.getParticipant().getId(),
+                result.getParticipant().getName(),
+                result.getParticipant().getGender(),
+                result.getParticipant().getAge(),
+                clubService.toDTO(result.getParticipant().getClub())
+        );
 
         return new ResultDTO(
                 result.getId(),
@@ -152,8 +161,9 @@ public class ResultService {
         // Konverter DisciplineDTO til Discipline
         Discipline discipline = disciplineService.toEntity(resultDTO.getDiscipline());
 
-        // Konverter ParticipantDTO til Participant
-        Participant participant = participantService.toEntity(resultDTO.getParticipant());
+        // Konverter ResultParticipantDTO til Participant
+        Participant participant = participantService.findParticipantsById(resultDTO.getParticipant().getId())
+                .orElseThrow(() -> new NotFoundException("Participant not found"));
 
         return new Result(
                 resultDTO.getId(),
