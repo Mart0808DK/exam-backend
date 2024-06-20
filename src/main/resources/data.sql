@@ -40,3 +40,11 @@ VALUES (1, 1),
        (4, 3),
        (5, 3),
        (6, 3);
+
+INSERT INTO result (participant_id, discipline_id, date, result_type, result_value)
+VALUES (1, 1, '2022-01-01 10:00:00', 'Time', 10),
+       (2, 2, '2022-01-02 11:00:00', 'Points', 20),
+       (3, 3, '2022-01-03 12:00:00', 'Distance', 30),
+       (4, 1, '2022-01-04 13:00:00', 'Time', 40),
+       (5, 2, '2022-01-05 14:00:00', 'Points', 50),
+       (6, 3, '2022-01-06 15:00:00', 'Distance', 60);

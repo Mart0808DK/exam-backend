@@ -20,10 +20,11 @@ public class Result {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Enumerated(EnumType.STRING)
     private ResultType resultType;
     private LocalDateTime date;
     private Integer resultValue;
-    @OneToOne
+    @ManyToOne
     private Discipline discipline;
     @ManyToOne
     private Participant participant;

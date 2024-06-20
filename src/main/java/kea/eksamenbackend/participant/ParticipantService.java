@@ -117,7 +117,6 @@ public class ParticipantService {
     }
 
     public Participant toEntity(ParticipantDTO participantDTO) {
-        // Konverter ClubDTO til Club
         Club club = new Club(
                 participantDTO.getClub().getId(),
                 participantDTO.getClub().getName(),
@@ -125,7 +124,6 @@ public class ParticipantService {
                 participantDTO.getClub().getArea()
         );
 
-        // Konverter liste af DisciplineDTO til liste af Discipline
         List<Discipline> disciplines = participantDTO.getDiscipline().stream()
                 .map(disciplineDTO -> new Discipline(
                         disciplineDTO.getId(),
@@ -134,7 +132,6 @@ public class ParticipantService {
                 ))
                 .collect(Collectors.toList());
 
-        // Opret en ny Participant og sæt dens felter
         Participant participant = new Participant(
                 participantDTO.getId(),
                 participantDTO.getName(),
@@ -145,5 +142,10 @@ public class ParticipantService {
         );
 
         return participant;
+    }
+
+    public Participant findByName(String name) {
+        return participantRepository.findByName(name)
+                .orElseThrow(() -> new NotFoundException("Participant not found"));
     }
 }

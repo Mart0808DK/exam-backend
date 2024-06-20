@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/entity4")
+@RequestMapping("/results")
 public class ResultController {
     private final ResultService entity1Service;
 
@@ -17,26 +17,26 @@ public class ResultController {
 
     @GetMapping
     public ResponseEntity<List<ResultDTO>> getAllEntity1() {
-        return ResponseEntity.ok(entity1Service.findAllEntitys1());
+        return ResponseEntity.ok(entity1Service.findAllResults());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Optional<ResultDTO>> getEntity1ById(@PathVariable Long id) {
-        return ResponseEntity.ok(entity1Service.findByIdEntity1(id));
+        return ResponseEntity.ok(entity1Service.findResultById(id));
     }
 
     @PostMapping
     public ResponseEntity<ResultDTO> saveEntity1(@RequestBody ResultDTO entity1DTO) {
-        return ResponseEntity.status(201).body(entity1Service.saveEntity1(entity1DTO));
+        return ResponseEntity.status(201).body(entity1Service.createResultWithOneParticipant(entity1DTO));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<Optional<ResultDTO>> updateEntity1(@PathVariable Long id, @RequestBody ResultDTO entity1DTO) {
-        return ResponseEntity.ok(entity1Service.updateIfExistsEntity1(id, entity1DTO));
+        return ResponseEntity.ok(entity1Service.updateIfResultExist(id, entity1DTO));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Optional<ResultDTO>> deleteEntity1(@PathVariable Long id) {
-        return ResponseEntity.ok(entity1Service.deleteEntity1(id));
+        return ResponseEntity.ok(entity1Service.deleteResult(id));
     }
 }
