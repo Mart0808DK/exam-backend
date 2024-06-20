@@ -19,6 +19,6 @@ public class ResultDTO {
     private ResultType resultType;
     private LocalDateTime date;
     private Integer resultValue;
-    private ResultParticipantDTO participant;
+    private ParticipantDTO participant;
     private DisciplineDTO discipline;
 }

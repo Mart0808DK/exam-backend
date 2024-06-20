@@ -1,6 +1,5 @@
 package kea.eksamenbackend.result;
 
-import kea.eksamenbackend.club.ClubService;
 import kea.eksamenbackend.discipline.Discipline;
 import kea.eksamenbackend.discipline.DisciplineDTO;
 import kea.eksamenbackend.discipline.DisciplineService;
@@ -21,13 +20,11 @@ public class ResultService {
         private final ResultRepository resultRepository;
         private final DisciplineService disciplineService;
         private final ParticipantService participantService;
-        private final ClubService clubService;
 
-        public ResultService(ResultRepository entity1Repository, DisciplineService disciplineService, ParticipantService participantService, ClubService clubService) {
+        public ResultService(ResultRepository entity1Repository, DisciplineService disciplineService, ParticipantService participantService) {
             this.resultRepository = entity1Repository;
             this.disciplineService = disciplineService;
             this.participantService = participantService;
-            this.clubService = clubService;
         }
 
     public List<ResultDTO> findAllResults() {
@@ -139,13 +136,7 @@ public class ResultService {
         DisciplineDTO disciplineDTO = disciplineService.toDTO(result.getDiscipline());
 
         // Konverter Participant til ResultParticipantDTO
-        ResultParticipantDTO participantDTO = new ResultParticipantDTO(
-                result.getParticipant().getId(),
-                result.getParticipant().getName(),
-                result.getParticipant().getGender(),
-                result.getParticipant().getAge(),
-                clubService.toDTO(result.getParticipant().getClub())
-        );
+        ParticipantDTO participantDTO = participantService.toDTO(result.getParticipant());
 
         return new ResultDTO(
                 result.getId(),

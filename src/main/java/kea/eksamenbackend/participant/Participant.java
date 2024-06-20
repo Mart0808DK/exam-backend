@@ -1,7 +1,6 @@
 package kea.eksamenbackend.participant;
 
 import jakarta.persistence.*;
-import kea.eksamenbackend.club.Club;
 import kea.eksamenbackend.discipline.Discipline;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -24,8 +23,7 @@ public class Participant {
     @Enumerated(EnumType.STRING)
     private Gender gender;
     private Integer age;
-    @ManyToOne
-    private Club club;
+    private String clubName;
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Discipline> discipline = new ArrayList<>();
 

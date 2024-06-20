@@ -5,21 +5,14 @@ VALUES ('100m Løb', 'Time'),
        ('Højdespring', 'Points'),
        ('Diskoskast', 'Distance');
 
-INSERT INTO club (name, ranking, area)
-VALUES ('Aarhus 1900', 1, 'Jylland'),
-       ('Aarhus Fremad', 2, 'Jylland'),
-       ('Aalborg Atletik', 3, 'Jylland'),
-       ('København Atletik', 1, 'Sjælland'),
-       ('Odense Atletik', 2, 'Fyn'),
-       ('Helsingør Atletik', 3, 'Sjælland');
 
-INSERT INTO participant (name, gender, age, club_id)
-VALUES ('Anders Andersen', 'MALE', 25, 1),
-       ('Bente Bentsen', 'FEMALE', 30, 2),
-       ('Carsten Carstensen', 'MALE', 35, 3),
-       ('Dorthe Dorthesen', 'FEMALE', 40, 4),
-       ('Erik Eriksen', 'MALE', 45, 5),
-       ('Fie Fiesdatter', 'FEMALE', 50, 6);
+INSERT INTO participant (name, gender, age, club_name)
+VALUES ('Anders Andersen', 'MALE', 25, 'Aalborg Atletikklub'),
+       ('Bente Bentsen', 'FEMALE', 30, 'Brøndby Atletikklub'),
+       ('Carsten Carstensen', 'MALE', 35, 'Copenhagen Atletikklub'),
+       ('Dorthe Dorthesen', 'FEMALE', 40, 'Djursland Atletikklub'),
+       ('Erik Eriksen', 'MALE', 45, 'Esbjerg Atletikklub'),
+       ('Fie Fiesdatter', 'FEMALE', 50, 'Fredericia Atletikklub');
 
 INSERT INTO participant_discipline (participant_id, discipline_id)
 VALUES (1, 1),

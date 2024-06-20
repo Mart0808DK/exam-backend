@@ -1,8 +1,5 @@
 package kea.eksamenbackend.participant;
 
-import kea.eksamenbackend.club.Club;
-import kea.eksamenbackend.club.ClubDTO;
-import kea.eksamenbackend.club.ClubRepository;
 import kea.eksamenbackend.discipline.Discipline;
 import kea.eksamenbackend.discipline.DisciplineDTO;
 import kea.eksamenbackend.discipline.DisciplineRepository;
@@ -16,12 +13,10 @@ import java.util.stream.Collectors;
 @Service
 public class ParticipantService {
     private final ParticipantRepository participantRepository;
-    private final ClubRepository clubRepository;
     private final DisciplineRepository disciplineRepository;
 
-    public ParticipantService(ParticipantRepository entity1Repository, ClubRepository clubRepository, DisciplineRepository disciplineRepository) {
+    public ParticipantService(ParticipantRepository entity1Repository, DisciplineRepository disciplineRepository) {
         this.participantRepository = entity1Repository;
-        this.clubRepository = clubRepository;
         this.disciplineRepository = disciplineRepository;
     }
 
@@ -35,9 +30,6 @@ public class ParticipantService {
     }
 
     public ParticipantDTO createParticipant(ParticipantDTO participantDTO) {
-        // Fetch the Club entity using the provided club name
-        Club club = clubRepository.findByName(participantDTO.getClub().getName())
-                .orElseThrow(() -> new NotFoundException("Club not found"));
 
         // Fetch the Discipline entities using the provided discipline names
         List<Discipline> disciplines = participantDTO.getDiscipline().stream()
@@ -46,7 +38,7 @@ public class ParticipantService {
                 .collect(Collectors.toList());
 
 
-        Participant participant = new Participant(participantDTO.getId(), participantDTO.getName(), participantDTO.getGender(), participantDTO.getAge(), club, disciplines);
+        Participant participant = new Participant(participantDTO.getId(), participantDTO.getName(), participantDTO.getGender(), participantDTO.getAge(), participantDTO.getClubName(), disciplines);
 
 
         return toDTO(participantRepository.save(participant));
@@ -57,9 +49,6 @@ public class ParticipantService {
         Participant existingParticipant = participantRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Participant not found"));
 
-        // Fetch the Club entity using the provided club name
-        Club club = clubRepository.findByName(participantDTO.getClub().getName())
-                .orElseThrow(() -> new NotFoundException("Club not found"));
 
         // Fetch the Discipline entities using the provided discipline names
         List<Discipline> disciplines = participantDTO.getDiscipline().stream()
@@ -68,8 +57,11 @@ public class ParticipantService {
                 .collect(Collectors.toList());
 
         // Set the fetched Club and Discipline entities to the existing Participant
-        existingParticipant.setClub(club);
         existingParticipant.setDiscipline(disciplines);
+        existingParticipant.setName(participantDTO.getName());
+        existingParticipant.setGender(participantDTO.getGender());
+        existingParticipant.setAge(participantDTO.getAge());
+        existingParticipant.setClubName(participantDTO.getClubName());
 
         // Save the updated Participant
         return Optional.of(toDTO(participantRepository.save(existingParticipant)));
@@ -86,13 +78,6 @@ public class ParticipantService {
     }
 
     public ParticipantDTO toDTO(Participant participant) {
-        // Konverter Club til ClubDTO
-        ClubDTO clubDTO = new ClubDTO(
-                participant.getClub().getId(),
-                participant.getClub().getName(),
-                participant.getClub().getRanking(),
-                participant.getClub().getArea()
-        );
 
         // Konverter liste af Discipline til liste af DisciplineDTO
         List<DisciplineDTO> disciplineDTOs = participant.getDiscipline().stream()
@@ -109,7 +94,7 @@ public class ParticipantService {
                 participant.getName(),
                 participant.getGender(),
                 participant.getAge(),
-                clubDTO,
+                participant.getClubName(),
                 disciplineDTOs
         );
 
@@ -117,12 +102,7 @@ public class ParticipantService {
     }
 
     public Participant toEntity(ParticipantDTO participantDTO) {
-        Club club = new Club(
-                participantDTO.getClub().getId(),
-                participantDTO.getClub().getName(),
-                participantDTO.getClub().getRanking(),
-                participantDTO.getClub().getArea()
-        );
+
 
         List<Discipline> disciplines = participantDTO.getDiscipline().stream()
                 .map(disciplineDTO -> new Discipline(
@@ -137,7 +117,7 @@ public class ParticipantService {
                 participantDTO.getName(),
                 participantDTO.getGender(),
                 participantDTO.getAge(),
-                club,
+                participantDTO.getClubName(),
                 disciplines
         );
 
