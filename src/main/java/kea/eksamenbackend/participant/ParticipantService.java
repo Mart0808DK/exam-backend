@@ -1,8 +1,10 @@
 package kea.eksamenbackend.participant;
 
 import kea.eksamenbackend.club.Club;
+import kea.eksamenbackend.club.ClubDTO;
 import kea.eksamenbackend.club.ClubRepository;
 import kea.eksamenbackend.discipline.Discipline;
+import kea.eksamenbackend.discipline.DisciplineDTO;
 import kea.eksamenbackend.discipline.DisciplineRepository;
 import kea.eksamenbackend.errorhandling.exception.NotFoundException;
 import org.springframework.stereotype.Service;
@@ -43,21 +45,34 @@ public class ParticipantService {
                         .orElseThrow(() -> new NotFoundException("Discipline not found: " + disciplineDTO.getName())))
                 .collect(Collectors.toList());
 
-        // Create a new Participant entity and set the fetched Club and Discipline entities
+
         Participant participant = new Participant(participantDTO.getId(), participantDTO.getName(), participantDTO.getGender(), participantDTO.getAge(), club, disciplines);
 
-        // Save the Participant entity and convert it to a DTO
+
         return toDTO(participantRepository.save(participant));
     }
 
-    public Optional<ParticipantDTO> updateParticipant(Long id, ParticipantDTO entity1DTO) {
-        if (participantRepository.existsById(id)) {
-            Participant existingEntity1 = toEntity(entity1DTO);
-            existingEntity1.setId(id);
-            return Optional.of(toDTO(participantRepository.save(existingEntity1)));
-        } else {
-            throw new NotFoundException("Entity1 not found");
-        }
+    public Optional<ParticipantDTO> updateParticipant(Long id, ParticipantDTO participantDTO) {
+        // Fetch the existing Participant
+        Participant existingParticipant = participantRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Participant not found"));
+
+        // Fetch the Club entity using the provided club name
+        Club club = clubRepository.findByName(participantDTO.getClub().getName())
+                .orElseThrow(() -> new NotFoundException("Club not found"));
+
+        // Fetch the Discipline entities using the provided discipline names
+        List<Discipline> disciplines = participantDTO.getDiscipline().stream()
+                .map(disciplineDTO -> disciplineRepository.findByName(disciplineDTO.getName())
+                        .orElseThrow(() -> new NotFoundException("Discipline not found: " + disciplineDTO.getName())))
+                .collect(Collectors.toList());
+
+        // Set the fetched Club and Discipline entities to the existing Participant
+        existingParticipant.setClub(club);
+        existingParticipant.setDiscipline(disciplines);
+
+        // Save the updated Participant
+        return Optional.of(toDTO(participantRepository.save(existingParticipant)));
     }
 
     public Optional<ParticipantDTO> deleteParticipant(Long id) {
@@ -70,11 +85,65 @@ public class ParticipantService {
         }
     }
 
-    public ParticipantDTO toDTO (Participant entity1) {
-        return new ParticipantDTO(entity1.getId(), entity1.getName(), entity1.getGender(), entity1.getAge(), entity1.getClub(), entity1.getDiscipline());
+    public ParticipantDTO toDTO(Participant participant) {
+        // Konverter Club til ClubDTO
+        ClubDTO clubDTO = new ClubDTO(
+                participant.getClub().getId(),
+                participant.getClub().getName(),
+                participant.getClub().getRanking(),
+                participant.getClub().getArea()
+        );
+
+        // Konverter liste af Discipline til liste af DisciplineDTO
+        List<DisciplineDTO> disciplineDTOs = participant.getDiscipline().stream()
+                .map(discipline -> new DisciplineDTO(
+                        discipline.getId(),
+                        discipline.getName(),
+                        discipline.getResultType()
+                ))
+                .collect(Collectors.toList());
+
+        // Opret en ny ParticipantDTO og sæt dens felter
+        ParticipantDTO participantDTO = new ParticipantDTO(
+                participant.getId(),
+                participant.getName(),
+                participant.getGender(),
+                participant.getAge(),
+                clubDTO,
+                disciplineDTOs
+        );
+
+        return participantDTO;
     }
 
-    public Participant toEntity (ParticipantDTO entity1DTO) {
-        return new Participant(entity1DTO.getId(), entity1DTO.getName(), entity1DTO.getGender(), entity1DTO.getAge(), entity1DTO.getClub(), entity1DTO.getDiscipline());
+    public Participant toEntity(ParticipantDTO participantDTO) {
+        // Konverter ClubDTO til Club
+        Club club = new Club(
+                participantDTO.getClub().getId(),
+                participantDTO.getClub().getName(),
+                participantDTO.getClub().getRanking(),
+                participantDTO.getClub().getArea()
+        );
+
+        // Konverter liste af DisciplineDTO til liste af Discipline
+        List<Discipline> disciplines = participantDTO.getDiscipline().stream()
+                .map(disciplineDTO -> new Discipline(
+                        disciplineDTO.getId(),
+                        disciplineDTO.getName(),
+                        disciplineDTO.getResultType()
+                ))
+                .collect(Collectors.toList());
+
+        // Opret en ny Participant og sæt dens felter
+        Participant participant = new Participant(
+                participantDTO.getId(),
+                participantDTO.getName(),
+                participantDTO.getGender(),
+                participantDTO.getAge(),
+                club,
+                disciplines
+        );
+
+        return participant;
     }
 }
