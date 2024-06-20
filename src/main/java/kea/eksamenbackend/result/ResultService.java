@@ -9,8 +9,10 @@ import kea.eksamenbackend.participant.ParticipantDTO;
 import kea.eksamenbackend.participant.ParticipantService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ResultService {
@@ -35,11 +37,26 @@ public class ResultService {
     }
 
     public ResultDTO createResultWithOneParticipant(ResultDTO resultDTO) {
-        // Find the Participant by name
-        Participant participant = participantService.findByName(resultDTO.getParticipant().getName());
 
         // Find the Discipline by name
         Discipline discipline = disciplineService.findByName(resultDTO.getDiscipline().getName());
+
+        // Find the Participant by name
+        Participant participant = participantService.findByName(resultDTO.getParticipant().getName());
+
+        // Check if the discipline already exists in the participant's discipline list
+        Discipline finalDiscipline = discipline;
+        Optional<Discipline> existingDiscipline = participant.getDiscipline().stream()
+                .filter(d -> d.getName().equals(finalDiscipline.getName()))
+                .findFirst();
+
+        // If the discipline exists, use the existing discipline object
+        if (existingDiscipline.isPresent()) {
+            discipline = existingDiscipline.get();
+        } else {
+            // If the discipline does not exist, add it to the participant's discipline list
+            participant.getDiscipline().add(discipline);
+        }
 
         // Create a new Result
         Result result = new Result(
@@ -51,8 +68,47 @@ public class ResultService {
                 participant
         );
 
-        // Save the Result
-        return toDTO(resultRepository.save(result));
+        // Save the Result to the repository
+        Result savedResult = resultRepository.save(result);
+
+        // Convert the saved Result to ResultDTO and return it
+        return toDTO(savedResult);
+    }
+
+    public List<ResultDTO> createResultsForParticipants(List<ResultDTO> resultDTOs) {
+        // Find the Discipline by name
+        Discipline discipline = disciplineService.findByName(resultDTOs.get(0).getDiscipline().getName());
+
+        // Create a list to store the created Results
+        List<Result> results = new ArrayList<>();
+
+        // Loop through each ResultDTO in the input list
+        for (ResultDTO resultDTO : resultDTOs) {
+            // Find the Participant by name
+            Participant participant = participantService.findByName(resultDTO.getParticipant().getName());
+
+            // Add the discipline to the participant's discipline list
+            participant.getDiscipline().add(discipline);
+
+            // Create a new Result
+            Result result = new Result(
+                    resultDTO.getId(),
+                    resultDTO.getResultType(),
+                    resultDTO.getDate(),
+                    resultDTO.getResultValue(),
+                    discipline,
+                    participant
+            );
+
+            // Add the created Result to the list
+            results.add(result);
+        }
+
+        // Save all the Results to the repository
+        List<Result> savedResults = resultRepository.saveAll(results);
+
+        // Convert the saved Results to ResultDTOs and return the list
+        return savedResults.stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     public Optional<ResultDTO> updateIfResultExist(Long id, ResultDTO entity1DTO) {

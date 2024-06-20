@@ -9,34 +9,39 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/results")
 public class ResultController {
-    private final ResultService entity1Service;
+    private final ResultService resultService;
 
     public ResultController(ResultService entity1Service) {
-        this.entity1Service = entity1Service;
+        this.resultService = entity1Service;
     }
 
     @GetMapping
-    public ResponseEntity<List<ResultDTO>> getAllEntity1() {
-        return ResponseEntity.ok(entity1Service.findAllResults());
+    public ResponseEntity<List<ResultDTO>> getAllResults() {
+        return ResponseEntity.ok(resultService.findAllResults());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<ResultDTO>> getEntity1ById(@PathVariable Long id) {
-        return ResponseEntity.ok(entity1Service.findResultById(id));
+    public ResponseEntity<Optional<ResultDTO>> getResultById(@PathVariable Long id) {
+        return ResponseEntity.ok(resultService.findResultById(id));
     }
 
     @PostMapping
-    public ResponseEntity<ResultDTO> saveEntity1(@RequestBody ResultDTO entity1DTO) {
-        return ResponseEntity.status(201).body(entity1Service.createResultWithOneParticipant(entity1DTO));
+    public ResponseEntity<ResultDTO> createResultWithOneParticipant(@RequestBody ResultDTO entity1DTO) {
+        return ResponseEntity.status(201).body(resultService.createResultWithOneParticipant(entity1DTO));
+    }
+
+    @PostMapping("/participants")
+    public ResponseEntity<List<ResultDTO>> createResultsForParticipants(@RequestBody List<ResultDTO> resultDTOs) {
+        return ResponseEntity.status(201).body(resultService.createResultsForParticipants(resultDTOs));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Optional<ResultDTO>> updateEntity1(@PathVariable Long id, @RequestBody ResultDTO entity1DTO) {
-        return ResponseEntity.ok(entity1Service.updateIfResultExist(id, entity1DTO));
+    public ResponseEntity<Optional<ResultDTO>> updateResult(@PathVariable Long id, @RequestBody ResultDTO entity1DTO) {
+        return ResponseEntity.ok(resultService.updateIfResultExist(id, entity1DTO));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Optional<ResultDTO>> deleteEntity1(@PathVariable Long id) {
-        return ResponseEntity.ok(entity1Service.deleteResult(id));
+    public ResponseEntity<Optional<ResultDTO>> deleteResult(@PathVariable Long id) {
+        return ResponseEntity.ok(resultService.deleteResult(id));
     }
 }
