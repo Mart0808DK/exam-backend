@@ -5,9 +5,9 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class Entity2DTO {
+public class ClubDTO {
     private Long id;
     private String name;
-    private String email;
-    private Integer age;
+    private Integer ranking;
+    private Area area;
 }

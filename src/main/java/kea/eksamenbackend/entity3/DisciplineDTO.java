@@ -5,9 +5,8 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class Entity3DTO {
+public class DisciplineDTO {
     private Long id;
     private String name;
-    private String email;
-    private Integer age;
+    private ResultType resultType;
 }
