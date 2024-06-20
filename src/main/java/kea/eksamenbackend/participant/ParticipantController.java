@@ -16,27 +16,27 @@ public class ParticipantController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ParticipantDTO>> getAllEntity1() {
-        return ResponseEntity.ok(entity1Service.findAllEntitys1());
+    public ResponseEntity<List<ParticipantDTO>> getAllParticipants() {
+        return ResponseEntity.ok(entity1Service.findAllParticipants());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<ParticipantDTO>> getEntity1ById(@PathVariable Long id) {
-        return ResponseEntity.ok(entity1Service.findByIdEntity1(id));
+    public ResponseEntity<Optional<ParticipantDTO>> getParticipantById(@PathVariable Long id) {
+        return ResponseEntity.ok(entity1Service.findParticipantById(id));
     }
 
     @PostMapping
-    public ResponseEntity<ParticipantDTO> saveEntity1(@RequestBody ParticipantDTO entity1DTO) {
-        return ResponseEntity.status(201).body(entity1Service.saveEntity1(entity1DTO));
+    public ResponseEntity<ParticipantDTO> createParticipant(@RequestBody ParticipantDTO entity1DTO) {
+        return ResponseEntity.status(201).body(entity1Service.createParticipant(entity1DTO));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Optional<ParticipantDTO>> updateEntity1(@PathVariable Long id, @RequestBody ParticipantDTO entity1DTO) {
-        return ResponseEntity.ok(entity1Service.updateIfExistsEntity1(id, entity1DTO));
+    public ResponseEntity<Optional<ParticipantDTO>> updateParticipant(@PathVariable Long id, @RequestBody ParticipantDTO entity1DTO) {
+        return ResponseEntity.ok(entity1Service.updateParticipant(id, entity1DTO));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Optional<ParticipantDTO>> deleteEntity1(@PathVariable Long id) {
-        return ResponseEntity.ok(entity1Service.deleteEntity1(id));
+    public ResponseEntity<Optional<ParticipantDTO>> deleteParticipant(@PathVariable Long id) {
+        return ResponseEntity.ok(entity1Service.deleteParticipant(id));
     }
 }

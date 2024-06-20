@@ -24,7 +24,7 @@ public class Participant {
     @Enumerated(EnumType.STRING)
     private Gender gender;
     private Integer age;
-    @OneToOne
+    @ManyToOne
     private Club club;
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Discipline> discipline = new ArrayList<>();

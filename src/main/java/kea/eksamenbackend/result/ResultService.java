@@ -47,11 +47,11 @@ public class ResultService {
         }
     }
 
-    public ResultDTO toDTO (Result entity2) {
-        return new ResultDTO(entity2.getId(), entity2.getName(), entity2.getEmail(), entity2.getAge());
+    public ResultDTO toDTO (Result result) {
+        return new ResultDTO(result.getId(), result.getResultType(), result.getDate(), result.getResultValue(), result.getParticipant(), result.getDiscipline());
     }
 
-    public Result toEntity (ResultDTO entity1DTO) {
-        return new Result(entity1DTO.getId(), entity1DTO.getName(), entity1DTO.getEmail(), entity1DTO.getAge());
+    public Result toEntity (ResultDTO resultDTO) {
+        return new Result(resultDTO.getId(), resultDTO.getResultType(), resultDTO.getDate(), resultDTO.getResultValue(), resultDTO.getDiscipline(), resultDTO.getParticipant());
     }
 }

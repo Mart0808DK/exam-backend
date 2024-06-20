@@ -1,33 +1,56 @@
 package kea.eksamenbackend.participant;
 
+import kea.eksamenbackend.club.Club;
+import kea.eksamenbackend.club.ClubRepository;
+import kea.eksamenbackend.discipline.Discipline;
+import kea.eksamenbackend.discipline.DisciplineRepository;
 import kea.eksamenbackend.errorhandling.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ParticipantService {
     private final ParticipantRepository participantRepository;
+    private final ClubRepository clubRepository;
+    private final DisciplineRepository disciplineRepository;
 
-    public ParticipantService(ParticipantRepository entity1Repository) {
+    public ParticipantService(ParticipantRepository entity1Repository, ClubRepository clubRepository, DisciplineRepository disciplineRepository) {
         this.participantRepository = entity1Repository;
+        this.clubRepository = clubRepository;
+        this.disciplineRepository = disciplineRepository;
     }
 
-    public List<ParticipantDTO> findAllEntitys1() {
+    public List<ParticipantDTO> findAllParticipants() {
         return participantRepository.findAll().stream().map(this::toDTO).toList();
     }
 
-    public Optional<ParticipantDTO> findByIdEntity1(Long id) {
+    public Optional<ParticipantDTO> findParticipantById(Long id) {
         if (!participantRepository.existsById(id)) throw new NotFoundException("Entity1 not found");
         return participantRepository.findById(id).map(this::toDTO);
     }
 
-    public ParticipantDTO saveEntity1(ParticipantDTO entity1DTO) {
-        return toDTO(participantRepository.save(toEntity(entity1DTO)));
+    public ParticipantDTO createParticipant(ParticipantDTO participantDTO) {
+        // Fetch the Club entity using the provided club name
+        Club club = clubRepository.findByName(participantDTO.getClub().getName())
+                .orElseThrow(() -> new NotFoundException("Club not found"));
+
+        // Fetch the Discipline entities using the provided discipline names
+        List<Discipline> disciplines = participantDTO.getDiscipline().stream()
+                .map(disciplineDTO -> disciplineRepository.findByName(disciplineDTO.getName())
+                        .orElseThrow(() -> new NotFoundException("Discipline not found: " + disciplineDTO.getName())))
+                .collect(Collectors.toList());
+
+        // Create a new Participant entity and set the fetched Club and Discipline entities
+        Participant participant = new Participant(participantDTO.getId(), participantDTO.getName(), participantDTO.getGender(), participantDTO.getAge(), club, disciplines);
+
+        // Save the Participant entity and convert it to a DTO
+        return toDTO(participantRepository.save(participant));
     }
 
-    public Optional<ParticipantDTO> updateIfExistsEntity1(Long id, ParticipantDTO entity1DTO) {
+    public Optional<ParticipantDTO> updateParticipant(Long id, ParticipantDTO entity1DTO) {
         if (participantRepository.existsById(id)) {
             Participant existingEntity1 = toEntity(entity1DTO);
             existingEntity1.setId(id);
@@ -37,7 +60,7 @@ public class ParticipantService {
         }
     }
 
-    public Optional<ParticipantDTO> deleteEntity1(Long id) {
+    public Optional<ParticipantDTO> deleteParticipant(Long id) {
         Optional<Participant> entity1 = participantRepository.findById(id);
         if (entity1.isPresent()) {
             participantRepository.deleteById(id);
