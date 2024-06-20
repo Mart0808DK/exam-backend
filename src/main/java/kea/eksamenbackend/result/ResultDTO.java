@@ -18,7 +18,7 @@ public class ResultDTO {
     private Long id;
     private ResultType resultType;
     private LocalDateTime date;
-    private Integer resultValue;
+    private String resultValue;
     private ParticipantDTO participant;
     private DisciplineDTO discipline;
 }

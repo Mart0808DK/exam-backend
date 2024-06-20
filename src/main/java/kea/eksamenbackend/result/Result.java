@@ -23,7 +23,7 @@ public class Result {
     @Enumerated(EnumType.STRING)
     private ResultType resultType;
     private LocalDateTime date;
-    private Integer resultValue;
+    private String resultValue;
     @ManyToOne
     private Discipline discipline;
     @ManyToOne
