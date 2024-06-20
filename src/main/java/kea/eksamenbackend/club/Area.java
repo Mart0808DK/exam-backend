@@ -1,4 +1,4 @@
-package kea.eksamenbackend.entity2;
+package kea.eksamenbackend.club;
 
 public enum Area {
     Sjælland,

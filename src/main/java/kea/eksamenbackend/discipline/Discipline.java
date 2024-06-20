@@ -1,6 +1,7 @@
-package kea.eksamenbackend.entity3;
+package kea.eksamenbackend.discipline;
 
 import jakarta.persistence.*;
+import kea.eksamenbackend.utils.ResultType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

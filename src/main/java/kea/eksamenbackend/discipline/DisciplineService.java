@@ -1,4 +1,4 @@
-package kea.eksamenbackend.entity3;
+package kea.eksamenbackend.discipline;
 
 import org.springframework.stereotype.Service;
 

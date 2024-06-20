@@ -1,8 +1,8 @@
-package kea.eksamenbackend.entity1;
+package kea.eksamenbackend.participant;
 
 import jakarta.persistence.*;
-import kea.eksamenbackend.entity2.Club;
-import kea.eksamenbackend.entity3.Discipline;
+import kea.eksamenbackend.club.Club;
+import kea.eksamenbackend.discipline.Discipline;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,4 +1,4 @@
-package kea.eksamenbackend.entity2;
+package kea.eksamenbackend.club;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

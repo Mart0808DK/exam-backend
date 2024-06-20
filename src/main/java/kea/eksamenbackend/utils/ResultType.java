@@ -1,4 +1,4 @@
-package kea.eksamenbackend.entity3;
+package kea.eksamenbackend.utils;
 
 public enum ResultType {
     Time,

@@ -1,4 +1,4 @@
-package kea.eksamenbackend.entity1;
+package kea.eksamenbackend.participant;
 
 import kea.eksamenbackend.errorhandling.exception.NotFoundException;
 import org.springframework.stereotype.Service;

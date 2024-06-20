@@ -1,4 +1,4 @@
-package kea.eksamenbackend.entity1;
+package kea.eksamenbackend.participant;
 
 public enum Gender {
     Male,

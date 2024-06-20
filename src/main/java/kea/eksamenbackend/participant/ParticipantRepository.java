@@ -1,4 +1,4 @@
-package kea.eksamenbackend.entity1;
+package kea.eksamenbackend.participant;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
