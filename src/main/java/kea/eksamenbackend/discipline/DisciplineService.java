@@ -1,6 +1,7 @@
 package kea.eksamenbackend.discipline;
 
 import kea.eksamenbackend.errorhandling.exception.NotFoundException;
+import kea.eksamenbackend.utils.ResultType;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +16,18 @@ public class DisciplineService {
 
     public List<DisciplineDTO> findAllDiscipline() {
         return entity1Repository.findAll().stream().map(this::toDTO).toList();
+    }
+
+    public DisciplineDTO createDiscipline(DisciplineDTO entity1DTO) {
+        return toDTO(entity1Repository.save(toEntity(entity1DTO)));
+    }
+
+    public DisciplineDTO updateDiscipline(Long id, DisciplineDTO entity1DTO) {
+        if (!entity1Repository.existsById(id)) throw new NotFoundException("Discipline not found");
+
+        if (!id.equals(entity1DTO.getId())) throw new NotFoundException("ID does not match");
+
+        return toDTO(entity1Repository.save(toEntity(entity1DTO)));
     }
 
     public DisciplineDTO toDTO (Discipline entity2) {
