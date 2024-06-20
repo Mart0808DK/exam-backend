@@ -23,8 +23,16 @@ public class ClubService {
         return entity1Repository.findById(id).map(this::toDTO);
     }
 
+    public ClubDTO createClub(ClubDTO clubDTO) {
+        return toDTO(entity1Repository.save(toEntity(clubDTO)));
+    }
+
     public ClubDTO toDTO (Club club) {
         return new ClubDTO(club.getId(), club.getName(), club.getRanking(), club.getArea());
+    }
+
+    public Club toEntity (ClubDTO clubDTO) {
+        return new Club(clubDTO.getId(), clubDTO.getName(), clubDTO.getRanking(), clubDTO.getArea());
     }
 
 }

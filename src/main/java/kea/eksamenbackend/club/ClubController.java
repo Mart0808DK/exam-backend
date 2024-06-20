@@ -24,4 +24,9 @@ public class ClubController {
     public ResponseEntity<Optional<ClubDTO>> getClubById(@PathVariable Long id) {
         return ResponseEntity.ok(entity1Service.findClubById(id));
     }
+
+    @PostMapping
+    public ResponseEntity<ClubDTO> createClub(@RequestBody ClubDTO entity1DTO) {
+        return ResponseEntity.status(201).body(entity1Service.createClub(entity1DTO));
+    }
 }
