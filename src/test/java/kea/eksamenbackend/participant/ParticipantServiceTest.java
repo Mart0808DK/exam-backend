@@ -69,7 +69,6 @@ class ParticipantServiceTest {
 
         ParticipantDTO participantDTO = new ParticipantDTO(1L, "John Doe", Gender.Male, 25, "Club", List.of(disciplineDTO));
 
-        // Mock the behavior of disciplineRepository to return an empty Optional when findByName is called
         when(disciplineRepository.findByName(anyString())).thenReturn(Optional.empty());
 
         // Act and Assert
@@ -80,5 +79,18 @@ class ParticipantServiceTest {
 
     @Test
     void updateParticipant() {
+        // Arrange
+        DisciplineDTO disciplineDTO = new DisciplineDTO(1L, "Unknown Discipline", ResultType.Time);
+
+        ParticipantDTO participantDTO = new ParticipantDTO(1L, "John Doe", Gender.Male, 25, "Club", List.of(disciplineDTO));
+
+        // Act
+        when(disciplineRepository.findByName(anyString())).thenReturn(Optional.empty());
+        when(participantRepository.findById(2L)).thenReturn(Optional.of(new Participant()));
+
+        // Assert
+        assertThrows(NotFoundException.class, () -> {
+            participantService.updateParticipant(2L, participantDTO);
+        });
     }
 }

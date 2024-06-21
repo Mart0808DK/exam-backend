@@ -41,7 +41,6 @@ public class ResultService {
         // Find the Discipline by name
         Discipline discipline = disciplineService.findByName(resultDTO.getDiscipline().getName());
 
-        // Find the Participant by name
         Participant participant = participantService.findByName(resultDTO.getParticipant().getName());
 
         // Check if the discipline already exists in the participant's discipline list
@@ -79,10 +78,8 @@ public class ResultService {
         // Find the Discipline by name
         Discipline discipline = disciplineService.findByName(resultDTOs.get(0).getDiscipline().getName());
 
-        // Create a list to store the created Results
         List<Result> results = new ArrayList<>();
 
-        // Loop through each ResultDTO in the input list
         for (ResultDTO resultDTO : resultDTOs) {
             // Find the Participant by name
             Participant participant = participantService.findByName(resultDTO.getParticipant().getName());
@@ -104,10 +101,8 @@ public class ResultService {
             results.add(result);
         }
 
-        // Save all the Results to the repository
         List<Result> savedResults = resultRepository.saveAll(results);
 
-        // Convert the saved Results to ResultDTOs and return the list
         return savedResults.stream().map(this::toDTO).collect(Collectors.toList());
     }
 

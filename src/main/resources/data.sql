@@ -1,4 +1,3 @@
-use exam_db;
 
 INSERT INTO discipline (name, result_type)
 VALUES ('100m Løb', 'Time'),

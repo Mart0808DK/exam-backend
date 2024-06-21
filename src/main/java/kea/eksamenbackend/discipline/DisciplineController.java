@@ -28,4 +28,5 @@ public class DisciplineController {
     public ResponseEntity<DisciplineDTO> updateDiscipline(@PathVariable Long id, @RequestBody DisciplineDTO entity1DTO) {
         return ResponseEntity.ok(entity1Service.updateDiscipline(id, entity1DTO));
     }
+
 }

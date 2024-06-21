@@ -1,9 +1,11 @@
 package kea.eksamenbackend.participant;
 
+import jakarta.transaction.Transactional;
 import kea.eksamenbackend.discipline.Discipline;
 import kea.eksamenbackend.discipline.DisciplineDTO;
 import kea.eksamenbackend.discipline.DisciplineRepository;
 import kea.eksamenbackend.errorhandling.exception.NotFoundException;
+import kea.eksamenbackend.result.ResultRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,10 +16,12 @@ import java.util.stream.Collectors;
 public class ParticipantService {
     private final ParticipantRepository participantRepository;
     private final DisciplineRepository disciplineRepository;
+    private final ResultRepository resultRepository;
 
-    public ParticipantService(ParticipantRepository entity1Repository, DisciplineRepository disciplineRepository) {
+    public ParticipantService(ParticipantRepository entity1Repository, DisciplineRepository disciplineRepository, ResultRepository resultRepository) {
         this.participantRepository = entity1Repository;
         this.disciplineRepository = disciplineRepository;
+        this.resultRepository = resultRepository;
     }
 
     public List<ParticipantDTO> findAllParticipants() {
@@ -66,13 +70,17 @@ public class ParticipantService {
         return Optional.of(toDTO(participantRepository.save(existingParticipant)));
     }
 
+    @Transactional
     public Optional<ParticipantDTO> deleteParticipant(Long id) {
-        Optional<Participant> entity1 = participantRepository.findById(id);
-        if (entity1.isPresent()) {
+        Optional<Participant> participant = participantRepository.findById(id);
+        if (participant.isPresent()) {
+            // Først slet alle resultater, der er tilknyttet til deltageren
+            resultRepository.deleteByParticipantId(id);
+            // Derefter slet deltageren
             participantRepository.deleteById(id);
-            return Optional.of(toDTO(entity1.get()));
+            return Optional.of(toDTO(participant.get()));
         } else {
-            throw new NotFoundException("Entity1 not found");
+            throw new NotFoundException("Participant not found");
         }
     }
 
@@ -87,8 +95,8 @@ public class ParticipantService {
                 ))
                 .collect(Collectors.toList());
 
-        // Opret en ny ParticipantDTO og sæt dens felter
-        ParticipantDTO participantDTO = new ParticipantDTO(
+
+        return new ParticipantDTO(
                 participant.getId(),
                 participant.getName(),
                 participant.getGender(),
@@ -96,8 +104,6 @@ public class ParticipantService {
                 participant.getClubName(),
                 disciplineDTOs
         );
-
-        return participantDTO;
     }
 
     public Participant toEntity(ParticipantDTO participantDTO) {
@@ -111,7 +117,7 @@ public class ParticipantService {
                 ))
                 .collect(Collectors.toList());
 
-        Participant participant = new Participant(
+        return new Participant(
                 participantDTO.getId(),
                 participantDTO.getName(),
                 participantDTO.getGender(),
@@ -119,8 +125,6 @@ public class ParticipantService {
                 participantDTO.getClubName(),
                 disciplines
         );
-
-        return participant;
     }
 
     public Participant findByName(String name) {

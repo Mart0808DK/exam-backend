@@ -1,70 +1,167 @@
 package kea.eksamenbackend.participant;
 
-import kea.eksamenbackend.discipline.DisciplineRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-@WebFluxTest(ParticipantController.class)
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 public class ParticipantControllerIntegrationTest {
 
-    @MockBean
-    private ParticipantService participantService;
-
-    @MockBean
-    private DisciplineRepository disciplineRepository;
 
     @Autowired
-    private WebTestClient webTestClient;
+    private WebTestClient webClient;
 
-    @BeforeEach
-    void setUp() {;
+    @Test
+    void notNull() {
+        assertNotNull(webClient);
     }
 
     @Test
-    void getAllParticipants() throws Exception {
-        // Udfør GET request
-        webTestClient.get().uri("/participants")
+    void getAllParticipants() {
+        webClient.get().uri("/participants")
                 .exchange()
                 .expectStatus().isOk()
-                .expectHeader().contentType("application/json")
-                .expectBodyList(ParticipantDTO.class)
-                .hasSize(2)
-                .returnResult();
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBodyList(ParticipantDTO.class);
     }
 
     @Test
-    void getParticipantById() throws Exception {
-        webTestClient.get().uri("/participants/1")
+    void getParticipantById() {
+        webClient.get().uri("/participants/1")
                 .exchange()
                 .expectStatus().isOk()
-                .expectHeader().contentType("application/json")
-                .expectBody()
-                .jsonPath("$.name").isEqualTo("Test Participant")
-                .jsonPath("$.discipline[0].name").isEqualTo("100m Løb")
-                .jsonPath("$.age").isEqualTo(25)
-                .jsonPath("$.club.name").isEqualTo("Aarhus 1900")
-                .jsonPath("$.club.area").isEqualTo("Jylland")
-                .jsonPath("$.club.ranking").isEqualTo(1)
-                .jsonPath("$.gender").isEqualTo(Gender.Male.toString());
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody().jsonPath("$.id").isEqualTo(1)
+                .jsonPath("$.name").isEqualTo("Anders Andersen")
+                .jsonPath("$.clubName").isEqualTo("Aalborg Atletikklub")
+                .jsonPath("$.age").isEqualTo(25);
     }
 
     @Test
-    void createParticipant() throws Exception {
+    void createParticipant() {
+        webClient.post().uri("/participants")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue("""
+                      {
+                          "name": "John doe",
+                          "gender": "Male",
+                          "age": 30,
+                          "clubName": "Brøndby Atletikklub",
+                          "discipline": [
+                              {
+                                  "id": 1,
+                                  "name": "100m Løb",
+                                  "resultType": "Time"
+                              },
+                              {
+                                  "id": 3,
+                                  "name": "Diskoskast",
+                                  "resultType": "Distance"
+                              }
+                          ]
+                      }
+""")
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody().jsonPath("$.id").isEqualTo(7)
+                .jsonPath("$.name").isEqualTo("John doe")
+                .jsonPath("$.clubName").isEqualTo("Brøndby Atletikklub")
+                .jsonPath("$.age").isEqualTo(30)
+                .jsonPath("$.gender").isEqualTo(Gender.Male.toString())
+                .jsonPath("$.discipline[0].id").isEqualTo(1)
+                .jsonPath("$.discipline[0].name").isEqualTo("100m Løb");
 
-        // Udfør POST request med ParticipantDTO
     }
 
     @Test
     void updateParticipant() {
+        // Opret en deltager
+        ParticipantDTO newParticipant = webClient.post().uri("/participants")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue("""
+                {
+                          "name": "John doe",
+                          "gender": "Male",
+                          "age": 30,
+                          "clubName": "Brøndby Atletikklub",
+                          "discipline": [
+                              {
+                                  "id": 1,
+                                  "name": "100m Løb",
+                                  "resultType": "Time"
+                              },
+                              {
+                                  "id": 3,
+                                  "name": "Diskoskast",
+                                  "resultType": "Distance"
+                              }
+                          ]
+                      }
+            """)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .returnResult(ParticipantDTO.class)
+                .getResponseBody()
+                .blockFirst();
+
+        assertNotNull(newParticipant);
+
+        // Opdater den oprettede deltager
+        webClient.put().uri("/participants/" + newParticipant.getId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue("""
+                {
+                          "name": "John doe",
+                          "gender": "Male",
+                          "age": 35,
+                          "clubName": "Brøndby Atletikklub",
+                          "discipline": [
+                              {
+                                  "id": 1,
+                                  "name": "100m Løb",
+                                  "resultType": "Time"
+                              },
+                              {
+                                  "id": 3,
+                                  "name": "Diskoskast",
+                                  "resultType": "Distance"
+                              }
+                          ]
+                      }
+            """)
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(newParticipant.getId())
+                .jsonPath("$.name").isEqualTo("John doe")
+                .jsonPath("$.gender").isEqualTo("Male")
+                .jsonPath("$.age").isEqualTo(35)
+                .jsonPath("$.clubName").isEqualTo("Brøndby Atletikklub");
+
     }
 
     @Test
     void deleteParticipant() {
+        webClient.delete().uri("/participants/1")
+                .exchange()
+                .expectStatus().isOk()
+                .expectHeader().contentType(MediaType.APPLICATION_JSON)
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(1)
+                .jsonPath("$.name").isEqualTo("Anders Andersen")
+                .jsonPath("$.clubName").isEqualTo("Aalborg Atletikklub")
+                .jsonPath("$.age").isEqualTo(25);
+
     }
 }
