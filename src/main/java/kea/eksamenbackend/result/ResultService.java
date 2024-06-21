@@ -32,32 +32,27 @@ public class ResultService {
     }
 
     public Optional<ResultDTO> findResultById(Long id) {
-        if (!resultRepository.existsById(id)) throw new NotFoundException("Entity1 not found");
+        if (!resultRepository.existsById(id)) throw new NotFoundException("Result not found");
         return resultRepository.findById(id).map(this::toDTO);
     }
 
     public ResultDTO createResultWithOneParticipant(ResultDTO resultDTO) {
 
-        // Find the Discipline by name
         Discipline discipline = disciplineService.findByName(resultDTO.getDiscipline().getName());
 
         Participant participant = participantService.findByName(resultDTO.getParticipant().getName());
 
-        // Check if the discipline already exists in the participant's discipline list
         Discipline finalDiscipline = discipline;
         Optional<Discipline> existingDiscipline = participant.getDiscipline().stream()
                 .filter(d -> d.getName().equals(finalDiscipline.getName()))
                 .findFirst();
 
-        // If the discipline exists, use the existing discipline object
         if (existingDiscipline.isPresent()) {
             discipline = existingDiscipline.get();
         } else {
-            // If the discipline does not exist, add it to the participant's discipline list
             participant.getDiscipline().add(discipline);
         }
 
-        // Create a new Result
         Result result = new Result(
                 resultDTO.getId(),
                 resultDTO.getResultType(),
@@ -67,27 +62,21 @@ public class ResultService {
                 participant
         );
 
-        // Save the Result to the repository
         Result savedResult = resultRepository.save(result);
 
-        // Convert the saved Result to ResultDTO and return it
         return toDTO(savedResult);
     }
 
     public List<ResultDTO> createResultsForParticipants(List<ResultDTO> resultDTOs) {
-        // Find the Discipline by name
         Discipline discipline = disciplineService.findByName(resultDTOs.get(0).getDiscipline().getName());
 
         List<Result> results = new ArrayList<>();
 
         for (ResultDTO resultDTO : resultDTOs) {
-            // Find the Participant by name
             Participant participant = participantService.findByName(resultDTO.getParticipant().getName());
 
-            // Add the discipline to the participant's discipline list
             participant.getDiscipline().add(discipline);
 
-            // Create a new Result
             Result result = new Result(
                     resultDTO.getId(),
                     resultDTO.getResultType(),
@@ -97,7 +86,6 @@ public class ResultService {
                     participant
             );
 
-            // Add the created Result to the list
             results.add(result);
         }
 
@@ -127,10 +115,8 @@ public class ResultService {
     }
 
     public ResultDTO toDTO (Result result) {
-        // Konverter Discipline til DisciplineDTO
         DisciplineDTO disciplineDTO = disciplineService.toDTO(result.getDiscipline());
 
-        // Konverter Participant til ResultParticipantDTO
         ParticipantDTO participantDTO = participantService.toDTO(result.getParticipant());
 
         return new ResultDTO(
@@ -144,10 +130,8 @@ public class ResultService {
     }
 
     public Result toEntity (ResultDTO resultDTO) {
-        // Konverter DisciplineDTO til Discipline
         Discipline discipline = disciplineService.toEntity(resultDTO.getDiscipline());
 
-        // Konverter ResultParticipantDTO til Participant
         Participant participant = participantService.findParticipantsById(resultDTO.getParticipant().getId())
                 .orElseThrow(() -> new NotFoundException("Participant not found"));
 

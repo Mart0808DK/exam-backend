@@ -29,7 +29,7 @@ public class ParticipantService {
     }
 
     public Optional<ParticipantDTO> findParticipantById(Long id) {
-        if (!participantRepository.existsById(id)) throw new NotFoundException("Entity1 not found");
+        if (!participantRepository.existsById(id)) throw new NotFoundException("Participant not found");
         return participantRepository.findById(id).map(this::toDTO);
     }
 
@@ -66,7 +66,6 @@ public class ParticipantService {
         existingParticipant.setAge(participantDTO.getAge());
         existingParticipant.setClubName(participantDTO.getClubName());
 
-        // Save the updated Participant
         return Optional.of(toDTO(participantRepository.save(existingParticipant)));
     }
 
@@ -74,9 +73,7 @@ public class ParticipantService {
     public Optional<ParticipantDTO> deleteParticipant(Long id) {
         Optional<Participant> participant = participantRepository.findById(id);
         if (participant.isPresent()) {
-            // Først slet alle resultater, der er tilknyttet til deltageren
             resultRepository.deleteByParticipantId(id);
-            // Derefter slet deltageren
             participantRepository.deleteById(id);
             return Optional.of(toDTO(participant.get()));
         } else {
@@ -86,7 +83,6 @@ public class ParticipantService {
 
     public ParticipantDTO toDTO(Participant participant) {
 
-        // Konverter liste af Discipline til liste af DisciplineDTO
         List<DisciplineDTO> disciplineDTOs = participant.getDiscipline().stream()
                 .map(discipline -> new DisciplineDTO(
                         discipline.getId(),
