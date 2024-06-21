@@ -44,19 +44,18 @@ public class ParticipantService {
         return toDTO(participantRepository.save(participant));
     }
 
+
     public Optional<ParticipantDTO> updateParticipant(Long id, ParticipantDTO participantDTO) {
-        // Fetch the existing Participant
+
         Participant existingParticipant = participantRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Participant not found"));
 
 
-        // Fetch the Discipline entities using the provided discipline names
         List<Discipline> disciplines = participantDTO.getDiscipline().stream()
                 .map(disciplineDTO -> disciplineRepository.findByName(disciplineDTO.getName())
                         .orElseThrow(() -> new NotFoundException("Discipline not found: " + disciplineDTO.getName())))
                 .collect(Collectors.toList());
 
-        // Set the fetched Club and Discipline entities to the existing Participant
         existingParticipant.setDiscipline(disciplines);
         existingParticipant.setName(participantDTO.getName());
         existingParticipant.setGender(participantDTO.getGender());
